@@ -1,0 +1,100 @@
+require 'rack/request'
+require 'rack/response'
+require 'haml'
+
+
+module PiedraPapelTijeras
+	class App
+		def initialize(app=nil)
+			@app = app
+			@content_type = :html
+			@defeat = {'piedra' => 'tijeras', 'papel' => 'piedra', 'tijeras' => 'papel'}
+			@throws = @defeat.keys
+		end
+		
+		def set_env(env)
+		   @env = env
+		   @session = env['rack.session']
+		end
+
+		def play
+		   return @session['play'].to_i   if @session['play']
+		   @session['play'] = 0
+		end
+
+		def play=(value)
+		   @session['play'] = value
+		end
+
+		def won
+		   return @session['won'].to_i if @session['won']
+		   @session['won'] = 0
+		end
+
+		def won=(value)
+		   @session['won'] = value
+		end
+
+
+		def lost
+		   return @session['lost'].to_i if @session['lost']
+		   @session['lost'] = 0
+		end
+
+		def lost=(value)
+		   @session['lost'] = value
+		end
+
+		
+		def tied
+		   return @session['tied'].to_i if @session['tied']
+		   @session['tied'] = 0
+		end
+
+		def tied=(value)
+		   @session['tied'] = value
+		end
+
+
+		def call(env)
+			req = Rack::Request.new(env)
+
+			req.env.keys.sort.each { |x| puts "#{x} => #{req.env[x]}" }
+			
+			computer_throw = @throws.sample
+			player_throw = req.GET["choice"]
+			answer = if !@throws.include?(player_throw)
+				
+				"Elige una de las opciones:"
+				self.play = self.play+1
+
+			elsif player_throw == computer_throw
+				
+				"Has empatado! :|"
+				self.tied = self.tied+1
+				
+			elsif computer_throw == @defeat[player_throw]
+				
+				"Vaamos! #{player_throw} gana a #{computer_throw}!! :D"
+				self.won = self.won+1
+				
+			else
+				
+				"Ouu vaya! #{computer_throw} won a #{player_throw}! :("
+				self.lost = self.lost+1
+				
+			end
+
+			engine = Haml::Engine.new File.open("views/index.haml").read
+			res = Rack::Response.new
+			res.write engine.render({},
+				:answer => answer,
+				:won => self.won,
+				:lost => self.lost,
+				:tied => self.tied,
+				:play => self.play)
+			res.finish
+		end
+	end
+end
+

@@ -1,0 +1,42 @@
+%html
+	%head	
+		%script{:src => "/public/js/bootstrap.js"}
+		%meta{"http-equiv" => "Content-Type", :content => "text/html;charset=UTF-8"}
+		%title PPT
+		%link{:href => "/public/css/bootstrap.css", :rel => "stylesheet"}
+		%link{:href => "/public/css/bootstrap-responsive.css", :rel => "stylesheet"}/
+	%body{:background => "/public/img/fondo.jpg"}
+		.navbar.navbar-inverse.navbar-fixed-top
+			.navbar-inner
+		
+		.row-fluid
+			.span3		
+				%a{:href => "/?choice=piedra", :class => "btn btn-large btn-success"} Piedra
+			.span3
+				%a{:href => "/?choice=tijeras", :class => "btn btn-large btn-primary"} Tijera
+			.span3
+				%a{:href => "/?choice=papel", :class => "btn btn-large btn-default"} Papel
+			
+		%br		
+		.row-fluid
+			.span12
+				%center  
+					%h1 #{answer}
+					%br
+
+		%br
+		.row-fluid
+			.span3
+				%center
+					%h3 #{tiradas['Victorias']}
+			.span3
+				%center
+					%h3 #{tiradas['Empates']}
+			.span3
+				%center
+					%h3 #{tiradas['Derrotas']}		
+		
+
+
+
+					
